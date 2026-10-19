@@ -30,6 +30,9 @@ export "CacheConfig__Redis__InstanceName=${PROJECT_NAME:-agenthub}:"
 # 上传配置（URL 前缀，物理目录 = {ContentRoot}/wwwroot/upload）
 export UploadConfig__UploadPath=/upload/
 
+# 云端中心地址（数据库备份上传接收端根地址）
+export CloudConfig__ServerUrl=${CLOUD_SERVER_URL:-https://cloud.saibo.club}
+
 echo "→ Waiting for PostgreSQL..."
 until PGPASSWORD="${POSTGRES_PASSWORD}" psql -h 127.0.0.1 -U postgres -d "${POSTGRES_DB:-sb_agent_hub}" -c "SELECT 1;" &>/dev/null; do
     sleep 1
