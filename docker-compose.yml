@@ -1,0 +1,42 @@
+name: ${PROJECT_NAME:-agenthub}
+
+services:
+  app:
+    image: agent-hub:pg-latest
+    build:
+      context: .
+    restart: unless-stopped
+    ports:
+      - "${CHAT_PORT:-9000}:9000"
+      - "${ADMIN_PORT:-9001}:9001"
+      - "${API_PORT:-9002}:9002"
+      - "${WIDGET_PORT:-9003}:9003"
+    environment:
+      - PROJECT_NAME=${PROJECT_NAME:-agenthub}
+      - APP_DLL_NAME=${APP_DLL_NAME:-Sb.Apps.AgentHub.WebApi.dll}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB:-sb_agent_hub}
+      - JWT_ADMIN_KEY=${JWT_ADMIN_KEY}
+      - JWT_API_KEY=${JWT_API_KEY}
+      - JwtAdmin__Key=${JWT_ADMIN_KEY}
+      - JwtApi__Key=${JWT_API_KEY}
+      - ForceHttps=${FORCE_HTTPS:-true}
+      - DEFAULT_ADMIN_USER=${DEFAULT_ADMIN_USER:-admin}
+      - DEFAULT_ADMIN_PASS=${DEFAULT_ADMIN_PASS:-admin123}
+    volumes:
+      - ${POSTGRES_DATA_PATH:-postgres_data}:/var/lib/postgresql/data
+      - ${REDIS_DATA_PATH:-redis_data}:/var/lib/redis
+      - ${UPLOAD_DATA_PATH:-upload_data}:/app/api/wwwroot/upload
+      - dp_keys:/root/.aspnet/DataProtection-Keys
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9000/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  postgres_data:
+  redis_data:
+  upload_data:
+  dp_keys:
